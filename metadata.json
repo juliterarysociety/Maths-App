@@ -1,0 +1,6 @@
+{
+  "name": "MathStep - Gamified Math Learning",
+  "description": "Mobile-first, gamified micro-stepping math learning app for Class 10-12 with interactive JSXGraph geometry diagrams, KaTeX formulas, streaks, and XP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

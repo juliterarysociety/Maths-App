@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* KaTeX container adjustments for mobile screens */
+.katex-display {
+  margin: 0.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.katex {
+  font-size: 1.1em;
+  text-rendering: geometricPrecision;
+}
+
+.katex-compact .katex {
+  font-size: 1em;
+}
+
+/* Modern styling for JSXGraph container to override retro default borders */
+.jxgbox {
+  border: none !important;
+  border-radius: 0.75rem !important;
+  background-color: transparent !important;
+}
+
+.jxgbox svg {
+  border-radius: 0.75rem;
+}

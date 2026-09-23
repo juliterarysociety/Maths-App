@@ -154,32 +154,33 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
     <div
       ref={cardRef}
       id="geometry-canvas-card"
-      className={`relative bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden transition-all duration-300 ${
+      className={`relative bg-white border border-[#E5E7EB] rounded-lg shadow-xs overflow-hidden transition-all duration-300 ${
         isFullscreen
           ? 'fixed inset-4 z-50 flex flex-col bg-white shadow-2xl p-4'
           : 'p-3 sm:p-4'
       } ${className}`}
     >
       {/* Canvas Top Bar / Controls */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-blue-700 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F8F6EE] border border-[#E5E7EB] text-[#333333] text-xs font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#EF3F52] animate-pulse" />
             Interactive Diagram
           </div>
-          <span className="hidden sm:inline text-xs text-slate-500">
+          <span className="hidden sm:inline text-xs text-[#64748B] font-medium capitalize">
             {diagram_config.diagram_id.replace(/_/g, ' ')}
           </span>
         </div>
 
         {/* Toolbar Buttons */}
-        <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1 border border-slate-200/70">
+        <div className="flex items-center gap-1 bg-[#F8F6EE] rounded-lg p-1 border border-[#E5E7EB]">
           <button
             type="button"
             id="diagram-zoom-in-btn"
             onClick={handleZoomIn}
             title="Zoom In"
-            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white transition-colors"
+            aria-label="Zoom in diagram"
+            className="p-1.5 rounded text-[#333333] hover:text-[#EF3F52] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
@@ -188,7 +189,8 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
             id="diagram-zoom-out-btn"
             onClick={handleZoomOut}
             title="Zoom Out"
-            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white transition-colors"
+            aria-label="Zoom out diagram"
+            className="p-1.5 rounded text-[#333333] hover:text-[#EF3F52] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
@@ -197,7 +199,8 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
             id="diagram-reset-btn"
             onClick={handleReset}
             title="Reset View"
-            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white transition-colors"
+            aria-label="Reset diagram view"
+            className="p-1.5 rounded text-[#333333] hover:text-[#EF3F52] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -206,7 +209,8 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
             id="diagram-fullscreen-btn"
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-            className="p-1.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white transition-colors"
+            aria-label={isFullscreen ? 'Exit fullscreen diagram' : 'View diagram in fullscreen'}
+            className="p-1.5 rounded text-[#333333] hover:text-[#EF3F52] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
           >
             {isFullscreen ? (
               <Minimize2 className="w-3.5 h-3.5" />
@@ -218,7 +222,7 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
       </div>
 
       {/* JSXGraph Container Div */}
-      <div className="relative w-full overflow-hidden rounded-xl bg-slate-50/50 border border-slate-100 flex-1">
+      <div className="relative w-full overflow-hidden rounded-lg bg-[#F8F6EE] border border-[#E5E7EB] flex-1">
         <div
           ref={containerRef}
           className={`jxgbox w-full select-none ${
@@ -228,8 +232,8 @@ export const GeometryCanvas: React.FC<GeometryCanvasProps> = ({
         />
 
         {/* Floating Touch / Mouse Tip */}
-        <div className="absolute bottom-2 left-2 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-xs text-[11px] font-medium text-slate-600 border border-slate-200/60 shadow-xs">
-          <Move className="w-3 h-3 text-blue-500" />
+        <div className="absolute bottom-2 left-2 pointer-events-none flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[11px] font-medium text-[#333333] border border-[#E5E7EB] shadow-xs">
+          <Move className="w-3 h-3 text-[#EF3F52]" />
           <span>{interactiveHint}</span>
         </div>
       </div>

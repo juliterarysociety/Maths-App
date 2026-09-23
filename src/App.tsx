@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import TopHeader from './components/TopHeader';
 import BottomNav from './components/BottomNav';
+import DesktopSidebar from './components/DesktopSidebar';
 import LearnTab from './components/LearnTab';
 import PapersTab from './pages/PapersTab';
 import AnalyticsTab from './pages/AnalyticsTab';
@@ -17,6 +18,35 @@ function AppContent() {
   const [xp, setXp] = useState(450);
   const [course, setCourse] = useState('Class 10 Math (CBSE)');
   const [activeProblem, setActiveProblem] = useState<ProblemData | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('mathstep_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('mathstep_sidebar_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  // Keyboard shortcut Ctrl+B or Cmd+B to toggle sidebar on desktop
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleStartLesson = (node: LessonNode) => {
     // Match problem from mock data if available
@@ -53,19 +83,31 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased select-none">
-      {/* 1. Fixed TopHeader (Height: ~60px) */}
+    <div className="min-h-screen bg-[#F8F6EE] text-[#333333] flex flex-col font-sans antialiased select-none">
+      {/* Desktop Left Sidebar (Visible on md and larger screens) */}
+      <DesktopSidebar
+        streak={streak}
+        xp={xp}
+        currentCourse={course}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
+      />
+
+      {/* 1. Fixed TopHeader (Height: ~60px, offset by left sidebar on desktop) */}
       <TopHeader
         streak={streak}
         xp={xp}
         currentCourse={course}
         onCourseChange={(newCourse) => setCourse(newCourse)}
+        isSidebarCollapsed={isSidebarCollapsed}
       />
 
       {/* 2. Scrollable main ContentArea taking up remaining height */}
       <main
         id="main-content-area"
-        className="flex-1 w-full pt-[60px] pb-[70px] overflow-y-auto bg-slate-50 min-h-screen"
+        className={`flex-1 w-full pt-[60px] pb-[70px] md:pb-12 ${
+          isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'
+        } transition-all duration-300 ease-in-out overflow-y-auto bg-[#F8F6EE] min-h-screen`}
       >
         <Routes>
           <Route path="/" element={<Navigate to="/learn" replace />} />

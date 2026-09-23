@@ -70,11 +70,11 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
     }
 
     if (isActive) {
-      return <Play className="w-7 h-7 fill-white text-white ml-0.5" />;
+      return <Play className="w-7 h-7 fill-[#EF3F52] text-[#EF3F52] ml-0.5" />;
     }
 
     // Locked state
-    return <Lock className="w-6 h-6 stroke-[2.5]" />;
+    return <Lock className="w-6 h-6 text-[#AAAAAA] stroke-[2.5]" />;
   };
 
   return (
@@ -90,11 +90,11 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
           }}
           className="absolute -top-11 z-20 flex flex-col items-center pointer-events-none"
         >
-          <div className="bg-emerald-600 text-white font-extrabold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md border border-emerald-400 flex items-center gap-1">
-            <Sparkles className="w-3 h-3 animate-spin" />
+          <div className="bg-[#FFE757] text-[#EF3F52] font-bold text-[11px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md border border-[#E5E7EB] flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-[#EF3F52]" />
             <span>START</span>
           </div>
-          <div className="w-2.5 h-2.5 bg-emerald-600 rotate-45 -mt-1.5 shadow-xs" />
+          <div className="w-2.5 h-2.5 bg-[#FFE757] border-r border-b border-[#E5E7EB] rotate-45 -mt-1.5 shadow-xs" />
         </motion.div>
       )}
 
@@ -104,6 +104,15 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
         id={`node-${node.id}`}
         disabled={isLocked}
         onClick={() => onClick(node)}
+        aria-label={`${node.title} - ${
+          isBoss
+            ? 'Boss Challenge'
+            : isActive
+            ? 'Active lesson to play'
+            : isCompleted
+            ? 'Completed lesson'
+            : 'Locked lesson'
+        } (${node.xpReward} XP)`}
         whileHover={!isLocked ? { scale: 1.06 } : {}}
         whileTap={!isLocked ? { scale: 0.92, y: 3 } : {}}
         animate={
@@ -111,9 +120,9 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
             ? {
                 scale: [1, 1.05, 1],
                 boxShadow: [
-                  '0 6px 0 #15803d, 0 0 0 0 rgba(34, 197, 94, 0.4)',
-                  '0 6px 0 #15803d, 0 0 0 12px rgba(34, 197, 94, 0)',
-                  '0 6px 0 #15803d, 0 0 0 0 rgba(34, 197, 94, 0)',
+                  '0 6px 0 #D97706, 0 0 0 0 rgba(255, 231, 87, 0.7)',
+                  '0 6px 0 #D97706, 0 0 0 12px rgba(255, 231, 87, 0)',
+                  '0 6px 0 #D97706, 0 0 0 0 rgba(255, 231, 87, 0)',
                 ],
               }
             : {}
@@ -127,26 +136,26 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
               }
             : { type: 'spring', stiffness: 400, damping: 17 }
         }
-        className={`relative z-10 flex items-center justify-center transition-all ${
+        className={`relative z-10 flex items-center justify-center focus:outline-none focus-visible:ring-4 focus-visible:ring-[#FFE757] focus-visible:ring-offset-2 transition-all ${
           isBoss
-            ? 'w-20 h-20 sm:w-22 sm:h-22 rounded-3xl'
+            ? 'w-20 h-20 sm:w-22 sm:h-22 rounded-2xl'
             : isActive
             ? 'w-18 h-18 sm:w-20 sm:h-20 rounded-full'
             : 'w-16 h-16 sm:w-18 sm:h-18 rounded-full'
         } ${
           isCompleted
             ? isBoss
-              ? 'bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-[0_6px_0_#b45309] border-2 border-amber-300'
-              : 'bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-[0_5px_0_#ca8a04] border-2 border-amber-300'
+              ? 'bg-[#FFE757] text-[#333333] shadow-[0_6px_0_#D97706] border-2 border-[#FFE757]'
+              : 'bg-[#FFE757] text-[#333333] shadow-[0_5px_0_#D97706] border-2 border-[#FFE757]'
             : isActive
-            ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-[0_6px_0_#15803d] border-3 border-emerald-300 ring-4 ring-emerald-100'
+            ? 'bg-[#FFE757] text-[#EF3F52] shadow-[0_6px_0_#D97706] border-3 border-white ring-4 ring-[#FFE757]/40'
             : isBoss
-            ? 'bg-slate-200 text-slate-400 shadow-[0_5px_0_#cbd5e1] border-2 border-slate-300 cursor-not-allowed opacity-90'
-            : 'bg-slate-200 text-slate-400 shadow-[0_5px_0_#cbd5e1] border-2 border-slate-300 cursor-not-allowed'
+            ? 'bg-[#E5E7EB] text-[#AAAAAA] shadow-[0_5px_0_#cbd5e1] border-2 border-[#E5E7EB] cursor-not-allowed opacity-90'
+            : 'bg-[#E5E7EB] text-[#AAAAAA] shadow-[0_5px_0_#cbd5e1] border-2 border-[#E5E7EB] cursor-not-allowed'
         }`}
       >
         {/* Top Gloss Reflection for 3D tactile button aesthetic */}
-        <div className="absolute top-1 left-2 right-2 h-1/3 rounded-t-full bg-white/25 pointer-events-none" />
+        <div className="absolute top-1 left-2 right-2 h-1/3 rounded-t-full bg-white/30 pointer-events-none" />
 
         {renderIcon()}
       </motion.button>
@@ -157,7 +166,7 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
           {[1, 2, 3].map((s) => (
             <Star
               key={s}
-              className="w-3.5 h-3.5 fill-amber-400 text-amber-500 drop-shadow-2xs"
+              className="w-3.5 h-3.5 fill-[#FFE757] text-[#D97706] drop-shadow-2xs"
             />
           ))}
         </div>
@@ -170,12 +179,12 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
         }`}
       >
         <span
-          className={`text-xs font-extrabold line-clamp-1 ${
+          className={`text-xs font-bold line-clamp-1 ${
             isActive
-              ? 'text-emerald-700'
+              ? 'text-[#EF3F52]'
               : isCompleted
-              ? 'text-slate-800'
-              : 'text-slate-400'
+              ? 'text-[#333333]'
+              : 'text-[#64748B]'
           }`}
         >
           {node.title}

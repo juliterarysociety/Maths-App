@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
   Sparkles,
@@ -342,82 +342,88 @@ export const LearnTab: React.FC<LearnTabProps> = ({ onStartLesson }) => {
       </AnimatePresence>
 
       {/* Node Details Launch Modal / Sheet */}
-      {selectedNode && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSelectedNode(null);
-          }}
-        >
+      <AnimatePresence>
+        {selectedNode && (
           <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="lesson-modal-title"
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="bg-white w-full max-w-md rounded-t-xl sm:rounded-lg p-6 shadow-xl border border-[#E5E7EB]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedNode(null);
+            }}
           >
-            {/* Top Handle on mobile */}
-            <div className="w-12 h-1.5 rounded-full bg-[#E5E7EB] mx-auto mb-4 sm:hidden" />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="lesson-modal-title"
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="bg-white w-full max-w-md rounded-t-xl sm:rounded-lg p-6 shadow-xl border border-[#E5E7EB]"
+            >
+              {/* Top Handle on mobile */}
+              <div className="w-12 h-1.5 rounded-full bg-[#E5E7EB] mx-auto mb-4 sm:hidden" />
 
-            {/* Header Badge & Title */}
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F8F6EE] text-[#333333] border border-[#E5E7EB]">
-                {selectedNode.type === 'boss'
-                  ? 'Mastery Challenge'
-                  : selectedNode.type === 'quiz'
-                  ? 'Concept Check'
-                  : 'Micro-Step Lesson'}
-              </span>
-              <div className="flex items-center gap-1 text-xs font-bold text-[#EF3F52] bg-[#F8F6EE] px-2.5 py-0.5 rounded-full border border-[#E5E7EB]">
-                <Zap className="w-3.5 h-3.5 fill-[#EF3F52] text-[#EF3F52]" />
-                <span>+{selectedNode.xpReward} XP</span>
+              {/* Header Badge & Title */}
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F8F6EE] text-[#333333] border border-[#E5E7EB]">
+                  {selectedNode.type === 'boss'
+                    ? 'Mastery Challenge'
+                    : selectedNode.type === 'quiz'
+                    ? 'Concept Check'
+                    : 'Micro-Step Lesson'}
+                </span>
+                <div className="flex items-center gap-1 text-xs font-bold text-[#EF3F52] bg-[#F8F6EE] px-2.5 py-0.5 rounded-full border border-[#E5E7EB]">
+                  <Zap className="w-3.5 h-3.5 fill-[#EF3F52] text-[#EF3F52]" />
+                  <span>+{selectedNode.xpReward} XP</span>
+                </div>
               </div>
-            </div>
 
-            <h3 id="lesson-modal-title" className="text-xl font-bold text-[#333333] mb-1">
-              {selectedNode.title}
-            </h3>
-            <p className="text-sm text-[#64748B] mb-6 leading-relaxed font-light">
-              {selectedNode.subtitle}
-            </p>
+              <h3 id="lesson-modal-title" className="text-xl font-bold text-[#333333] mb-1">
+                {selectedNode.title}
+              </h3>
+              <p className="text-sm text-[#64748B] mb-6 leading-relaxed font-light">
+                {selectedNode.subtitle}
+              </p>
 
-            {/* Gamification Features in Lesson */}
-            <div className="bg-[#F8F6EE] border border-[#E5E7EB] rounded-lg p-3.5 mb-6 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-normal text-[#333333]">
-                <CheckCircle className="w-4 h-4 text-[#EF3F52] shrink-0" />
-                <span>Step-by-step interactive math validation</span>
+              {/* Gamification Features in Lesson */}
+              <div className="bg-[#F8F6EE] border border-[#E5E7EB] rounded-lg p-3.5 mb-6 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-normal text-[#333333]">
+                  <CheckCircle className="w-4 h-4 text-[#EF3F52] shrink-0" />
+                  <span>Step-by-step interactive math validation</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-normal text-[#333333]">
+                  <Sparkles className="w-4 h-4 text-[#FFE757] shrink-0" />
+                  <span>Dynamic JSXGraph coordinate diagrams & KaTeX equations</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-xs font-normal text-[#333333]">
-                <Sparkles className="w-4 h-4 text-[#FFE757] shrink-0" />
-                <span>Dynamic JSXGraph coordinate diagrams & KaTeX equations</span>
-              </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedNode(null)}
-                className="flex-1 h-[41px] rounded-lg border border-[#E5E7EB] hover:bg-[#F8F6EE] text-[#333333] font-bold text-sm transition-colors"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                id="start-selected-lesson-btn"
-                onClick={handleLaunch}
-                className="flex-[2] h-[41px] rounded-[20px] bg-[#FFE757] text-[#EF3F52] hover:bg-[#EF3F52] hover:text-white font-bold text-sm transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2"
-              >
-                <Play className="w-4 h-4 fill-current" />
-                <span>Start Lesson</span>
-              </button>
-            </div>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedNode(null)}
+                  className="flex-1 h-[41px] rounded-lg border border-[#E5E7EB] hover:bg-[#F8F6EE] active:scale-[0.98] text-[#333333] font-bold text-sm transition-all"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  id="start-selected-lesson-btn"
+                  onClick={handleLaunch}
+                  className="flex-[2] h-[41px] rounded-[20px] bg-[#FFE757] text-[#EF3F52] hover:bg-[#EF3F52] hover:text-white font-bold text-sm transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  <span>Start Lesson</span>
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };

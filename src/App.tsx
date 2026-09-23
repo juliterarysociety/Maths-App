@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import TopHeader from './components/TopHeader';
 import BottomNav from './components/BottomNav';
 import DesktopSidebar from './components/DesktopSidebar';
@@ -9,11 +10,23 @@ import AnalyticsTab from './pages/AnalyticsTab';
 import ArenaTab from './pages/ArenaTab';
 import ProfileTab from './pages/ProfileTab';
 import MathProblemStepper from './components/MathProblemStepper';
-import { mockProblem, sampleProblems } from './data/mockProblem.js';
+import { getProblemById, defaultProblem } from './data/problemBank';
 import { LessonNode } from './data/syllabusData';
 import { ProblemData } from './types';
 
+const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
+    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
 function AppContent() {
+  const location = useLocation();
   const [streak, setStreak] = useState(12);
   const [xp, setXp] = useState(450);
   const [course, setCourse] = useState('Class 10 Math (CBSE)');
@@ -49,14 +62,13 @@ function AppContent() {
   }, []);
 
   const handleStartLesson = (node: LessonNode) => {
-    // Match problem from mock data if available
-    const matched =
-      sampleProblems.find((p) => p.id === node.problemId) || mockProblem;
+    // Dynamically match problem from problemBank using node.problemId
+    const matched = getProblemById(node.problemId) || defaultProblem;
     setActiveProblem(matched);
   };
 
-  const handleLessonComplete = (earnedXp: number) => {
-    setXp((prev) => prev + earnedXp);
+  const handleLessonComplete = (completionBonus: number = 20) => {
+    setXp((prev) => prev + completionBonus);
     setStreak((prev) => prev + 1);
   };
 
@@ -64,10 +76,16 @@ function AppContent() {
     setXp((prev) => prev + gained);
   };
 
-  // If activeProblem is running, show the full-screen interactive math stepper
+  // If activeProblem is running, show the full-screen interactive math stepper with smooth fade/scale
   if (activeProblem) {
     return (
-      <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-0 z-50 bg-white overflow-y-auto"
+      >
         <MathProblemStepper
           problemData={activeProblem}
           streak={streak}
@@ -78,7 +96,7 @@ function AppContent() {
           }}
           onXpGain={handleXpGain}
         />
-      </div>
+      </motion.div>
     );
   }
 
@@ -109,24 +127,53 @@ function AppContent() {
           isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'
         } transition-all duration-300 ease-in-out overflow-y-auto bg-[#F8F6EE] min-h-screen`}
       >
-        <Routes>
-          <Route path="/" element={<Navigate to="/learn" replace />} />
-          <Route
-            path="/learn"
-            element={<LearnTab onStartLesson={handleStartLesson} />}
-          />
-          <Route path="/papers" element={<PapersTab />} />
-          <Route path="/analytics" element={<AnalyticsTab />} />
-          <Route path="/arena" element={<ArenaTab />} />
-          <Route
-            path="/profile"
-            element={
-              <ProfileTab streak={streak} xp={xp} course={course} />
-            }
-          />
-          {/* Catch-all fallback */}
-          <Route path="*" element={<Navigate to="/learn" replace />} />
-        </Routes>
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Navigate to="/learn" replace />} />
+            <Route
+              path="/learn"
+              element={
+                <PageTransition>
+                  <LearnTab onStartLesson={handleStartLesson} />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/papers"
+              element={
+                <PageTransition>
+                  <PapersTab />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <PageTransition>
+                  <AnalyticsTab />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/arena"
+              element={
+                <PageTransition>
+                  <ArenaTab />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PageTransition>
+                  <ProfileTab streak={streak} xp={xp} course={course} />
+                </PageTransition>
+              }
+            />
+            {/* Catch-all fallback */}
+            <Route path="*" element={<Navigate to="/learn" replace />} />
+          </Routes>
+        </AnimatePresence>
       </main>
 
       {/* 3. Fixed BottomNavigation (Height: ~70px) pinned to bottom */}

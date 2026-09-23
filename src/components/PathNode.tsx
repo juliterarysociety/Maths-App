@@ -113,17 +113,12 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
             ? 'Completed lesson'
             : 'Locked lesson'
         } (${node.xpReward} XP)`}
-        whileHover={!isLocked ? { scale: 1.06 } : {}}
-        whileTap={!isLocked ? { scale: 0.92, y: 3 } : {}}
+        whileHover={!isLocked ? { scale: 1.04 } : {}}
+        whileTap={!isLocked ? { scale: 0.96, y: 2 } : {}}
         animate={
           isActive
             ? {
-                scale: [1, 1.05, 1],
-                boxShadow: [
-                  '0 6px 0 #D97706, 0 0 0 0 rgba(255, 231, 87, 0.7)',
-                  '0 6px 0 #D97706, 0 0 0 12px rgba(255, 231, 87, 0)',
-                  '0 6px 0 #D97706, 0 0 0 0 rgba(255, 231, 87, 0)',
-                ],
+                scale: [1, 1.03, 1],
               }
             : {}
         }
@@ -131,12 +126,12 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
           isActive
             ? {
                 repeat: Infinity,
-                duration: 2,
+                duration: 2.4,
                 ease: 'easeInOut',
               }
             : { type: 'spring', stiffness: 400, damping: 17 }
         }
-        className={`relative z-10 flex items-center justify-center focus:outline-none focus-visible:ring-4 focus-visible:ring-[#FFE757] focus-visible:ring-offset-2 transition-all ${
+        className={`relative z-10 flex items-center justify-center focus:outline-none focus-visible:ring-4 focus-visible:ring-[#FFE757] focus-visible:ring-offset-2 transition-colors ${
           isBoss
             ? 'w-20 h-20 sm:w-22 sm:h-22 rounded-2xl'
             : isActive
@@ -154,6 +149,21 @@ export const PathNode: React.FC<PathNodeProps> = ({ node, index, onClick }) => {
             : 'bg-[#E5E7EB] text-[#AAAAAA] shadow-[0_5px_0_#cbd5e1] border-2 border-[#E5E7EB] cursor-not-allowed'
         }`}
       >
+        {/* Compositor-accelerated pulsing beacon ring for active node */}
+        {isActive && (
+          <motion.span
+            aria-hidden="true"
+            initial={{ scale: 1, opacity: 0.65 }}
+            animate={{ scale: 1.25, opacity: 0 }}
+            transition={{
+              repeat: Infinity,
+              duration: 1.8,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="absolute inset-0 rounded-full bg-[#FFE757] -z-10 pointer-events-none"
+          />
+        )}
+
         {/* Top Gloss Reflection for 3D tactile button aesthetic */}
         <div className="absolute top-1 left-2 right-2 h-1/3 rounded-t-full bg-white/30 pointer-events-none" />
 

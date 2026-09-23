@@ -46,11 +46,11 @@ export const BottomNav: React.FC = () => {
             >
               {/* Soft Pill background for Active tab with spring bounce */}
               <motion.div
-                whileTap={{ scale: 0.88 }}
+                whileTap={{ scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 450, damping: 18 }}
-                className={`relative px-3.5 py-1.5 rounded-full flex flex-col items-center gap-1 transition-all ${
+                className={`relative px-3.5 py-1.5 rounded-full flex flex-col items-center gap-1 transition-colors ${
                   isActive
-                    ? 'bg-[#FFE757] text-[#333333]'
+                    ? 'text-[#333333]'
                     : 'text-[#64748B] hover:text-[#333333]'
                 }`}
               >
@@ -59,7 +59,7 @@ export const BottomNav: React.FC = () => {
                   <motion.div
                     layoutId="activeNavPill"
                     className="absolute inset-0 bg-[#FFE757] rounded-full -z-10 border border-[#E5E7EB] shadow-xs"
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
                   />
                 )}
 

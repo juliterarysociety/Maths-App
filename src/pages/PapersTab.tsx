@@ -94,7 +94,7 @@ export const PapersTab: React.FC = () => {
             key={filter}
             type="button"
             onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] ${
+            className={`px-4 py-2 rounded-full text-xs font-bold active:scale-[0.96] transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] ${
               activeFilter === filter
                 ? 'bg-[#FFE757] text-[#333333] shadow-xs'
                 : 'bg-white border border-[#E5E7EB] text-[#64748B] hover:text-[#333333] hover:bg-[#F8F6EE]'

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Map,
   FileText,
@@ -9,7 +10,6 @@ import {
   Sparkles,
   Flame,
   Gem,
-  BookOpen,
   ChevronRight,
   GraduationCap,
   PanelLeftClose,
@@ -91,7 +91,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                   onClick={onToggleCollapse}
                   title="Collapse sidebar (Ctrl+B)"
                   aria-label="Collapse sidebar"
-                  className="p-2 rounded-md text-[#333333] hover:bg-[#F8F6EE] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] shrink-0"
+                  className="p-2 rounded-md text-[#333333] hover:bg-[#F8F6EE] active:scale-[0.94] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] shrink-0"
                 >
                   <PanelLeftClose className="w-4 h-4" />
                 </button>
@@ -105,37 +105,11 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                 onClick={onToggleCollapse}
                 title="Expand sidebar (Ctrl+B)"
                 aria-label="Expand sidebar"
-                className="w-11 h-11 rounded-lg bg-[#F8F6EE] hover:bg-[#FFE757] text-[#333333] flex items-center justify-center transition-all border border-[#E5E7EB] shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757]"
+                className="w-11 h-11 rounded-lg bg-[#F8F6EE] hover:bg-[#FFE757] text-[#333333] flex items-center justify-center active:scale-[0.94] transition-all border border-[#E5E7EB] shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757]"
               >
                 <PanelLeftOpen className="w-5 h-5" />
               </button>
             )
-          )}
-        </div>
-
-        {/* Current Target Course Card */}
-        <div className="px-3 mt-3">
-          {isCollapsed ? (
-            <div
-              title={`Target Exam: ${currentCourse}`}
-              className="p-2.5 rounded-lg bg-[#F8F6EE] border border-[#E5E7EB] flex items-center justify-center text-[#EF3F52] hover:bg-[#FFE757]/30 transition-colors cursor-pointer"
-            >
-              <BookOpen className="w-4 h-4" />
-            </div>
-          ) : (
-            <div className="p-3 rounded-lg bg-[#F8F6EE] border border-[#E5E7EB] flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <BookOpen className="w-4 h-4 text-[#EF3F52] shrink-0" />
-                <div className="truncate">
-                  <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">
-                    Target Exam
-                  </span>
-                  <span className="text-xs font-bold text-[#333333] truncate block">
-                    {currentCourse}
-                  </span>
-                </div>
-              </div>
-            </div>
           )}
         </div>
 
@@ -146,15 +120,18 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
             const Icon = item.icon;
 
             return (
-              <button
+              <motion.button
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
                 aria-current={isActive ? 'page' : undefined}
                 title={isCollapsed ? `${item.label} (${item.description})` : undefined}
+                whileHover={!isCollapsed ? { x: 3 } : { scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 20 }}
                 className={`w-full flex items-center ${
                   isCollapsed ? 'justify-center p-3' : 'justify-between px-3 py-2.5'
-                } rounded-lg font-bold text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] ${
+                } rounded-lg font-bold text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] ${
                   isActive
                     ? 'bg-[#FFE757] text-[#333333] shadow-xs'
                     : 'text-[#333333] hover:bg-[#F8F6EE]'
@@ -183,7 +160,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
                 {!isCollapsed && isActive && (
                   <span className="w-1.5 h-1.5 rounded-full bg-[#EF3F52] shrink-0 ml-2" />
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </nav>

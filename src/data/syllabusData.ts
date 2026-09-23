@@ -41,6 +41,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'completed',
         stars: 3,
         xpReward: 30,
+        problemId: 'zeroes_polynomials_graph',
       },
       {
         id: 'node-1-2',
@@ -50,6 +51,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'completed',
         stars: 3,
         xpReward: 35,
+        problemId: 'quad_roots_factorization',
       },
       {
         id: 'node-1-3',
@@ -59,6 +61,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'completed',
         stars: 3,
         xpReward: 40,
+        problemId: 'quad_roots_factorization',
       },
       {
         id: 'node-1-4',
@@ -68,6 +71,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'completed',
         stars: 3,
         xpReward: 45,
+        problemId: 'quad_discriminant_nature',
       },
       {
         id: 'node-1-5',
@@ -78,6 +82,7 @@ export const syllabusData: SyllabusUnit[] = [
         stars: 3,
         xpReward: 80,
         bossType: 'castle',
+        problemId: 'arithmetic_progression_10th',
       },
     ],
   },
@@ -119,6 +124,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'locked',
         stars: 0,
         xpReward: 35,
+        problemId: 'class10_right_triangle_abc',
       },
       {
         id: 'node-2-4',
@@ -128,6 +134,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'locked',
         stars: 0,
         xpReward: 45,
+        problemId: 'class10_right_triangle_abc',
       },
       {
         id: 'node-2-5',
@@ -138,6 +145,7 @@ export const syllabusData: SyllabusUnit[] = [
         stars: 0,
         xpReward: 100,
         bossType: 'chest',
+        problemId: 'class10_right_triangle_abc',
       },
     ],
   },
@@ -189,6 +197,7 @@ export const syllabusData: SyllabusUnit[] = [
         state: 'locked',
         stars: 0,
         xpReward: 45,
+        problemId: 'class11_distance_formula',
       },
       {
         id: 'node-3-5',
@@ -199,6 +208,7 @@ export const syllabusData: SyllabusUnit[] = [
         stars: 0,
         xpReward: 120,
         bossType: 'castle',
+        problemId: 'class10_circle_tangent',
       },
     ],
   },

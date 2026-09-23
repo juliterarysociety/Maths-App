@@ -24,13 +24,14 @@ import {
 import { ProblemData, ProblemStep } from '../types';
 import GeometryCanvas from './GeometryCanvas';
 import { playSound } from '../utils/sound';
+import { parseNumericValue, validateAnswer } from '../utils/mathValidation';
 
 interface MathProblemStepperProps {
   problemData: ProblemData;
   streak?: number;
   xp?: number;
   onBack?: () => void;
-  onComplete?: (earnedXp: number) => void;
+  onComplete?: (completionBonus: number) => void;
   onXpGain?: (gained: number) => void;
 }
 
@@ -99,62 +100,10 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
     }, 200);
   };
 
-  // Helper to evaluate fractions or decimals safely
-  const parseNumericValue = (val: string): number | null => {
-    const clean = val.replace(/[^0-9./-]/g, '').trim();
-    if (!clean) return null;
-    if (clean.includes('/')) {
-      const parts = clean.split('/');
-      if (parts.length === 2) {
-        const num = parseFloat(parts[0]);
-        const den = parseFloat(parts[1]);
-        if (!isNaN(num) && !isNaN(den) && den !== 0) {
-          return num / den;
-        }
-      }
-    }
-    const parsed = parseFloat(clean);
-    return isNaN(parsed) ? null : parsed;
-  };
-
-  // Answer validator with tolerant normalization
-  const validateAnswer = (input: string, step: ProblemStep): boolean => {
-    if (!input.trim()) return false;
-
-    const cleanInput = input.trim().toLowerCase();
-    const expected = Array.isArray(step.expected_answer)
-      ? step.expected_answer
-      : [step.expected_answer];
-
-    // 1. Direct string match (trimmed, lowercased, ignoring unit spaces)
-    const directMatch = expected.some((exp) => {
-      const cleanExp = exp.trim().toLowerCase();
-      if (cleanInput === cleanExp) return true;
-      // Strip common units like cm, °, deg, units
-      const strippedInput = cleanInput.replace(/(cm|°|deg|degrees|units|\s)/g, '');
-      const strippedExp = cleanExp.replace(/(cm|°|deg|degrees|units|\s)/g, '');
-      return strippedInput === strippedExp;
-    });
-
-    if (directMatch) return true;
-
-    // 2. Numeric equivalence for fractions and decimals (e.g. 3/5 == 0.6)
-    const userNum = parseNumericValue(cleanInput);
-    if (userNum !== null) {
-      for (const exp of expected) {
-        const expNum = parseNumericValue(exp);
-        if (expNum !== null && Math.abs(userNum - expNum) < 0.015) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  };
-
   // Handle checking the user's answer
   const handleCheckAnswer = () => {
-    if (!currentStep) return;
+    // Guard against repeated submissions or check while in success state
+    if (!currentStep || status === 'success') return;
 
     if (!userAnswer.trim()) {
       setFeedbackMessage('Please enter your answer before checking!');
@@ -183,7 +132,7 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
         positiveMsgs[Math.floor(Math.random() * positiveMsgs.length)]
       );
 
-      // Award XP
+      // Award step XP
       const stepXp = 20;
       setEarnedSessionXp((prev) => prev + stepXp);
       setShowXpFloat(true);
@@ -215,6 +164,7 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
 
   // Handle advancing to next step or finishing
   const handleContinue = () => {
+    if (isFinished) return;
     if (currentStepIndex < totalSteps - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
@@ -222,7 +172,7 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
       triggerGrandCelebration();
       if (soundEnabled) playSound('complete');
       if (onComplete) {
-        onComplete(earnedSessionXp + 20); // Bonus problem completion XP
+        onComplete(20); // Award exactly the fixed 20 XP completion bonus
       }
     }
   };
@@ -323,25 +273,31 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
-          <button
+          <motion.button
             type="button"
             id="restart-problem-btn"
             onClick={handleRestart}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             className="flex-1 h-[41px] rounded-lg border border-[#E5E7EB] bg-white text-[#333333] font-bold hover:bg-[#F8F6EE] transition-colors flex items-center justify-center gap-2 shadow-xs"
           >
             <RotateCcw className="w-4 h-4 text-[#64748B]" />
             Practice Again
-          </button>
+          </motion.button>
           {onBack && (
-            <button
+            <motion.button
               type="button"
               id="next-lesson-btn"
               onClick={onBack}
-              className="flex-1 h-[41px] rounded-[20px] bg-[#FFE757] hover:bg-[#EF3F52] text-[#EF3F52] hover:text-white font-bold transition-all flex items-center justify-center gap-2 shadow-xs active:scale-[0.98]"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              className="flex-1 h-[41px] rounded-[20px] bg-[#FFE757] hover:bg-[#EF3F52] text-[#EF3F52] hover:text-white font-bold transition-colors flex items-center justify-center gap-2 shadow-xs"
             >
               <span>Back to Topics</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </motion.button>
           )}
         </div>
       </div>
@@ -360,7 +316,7 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
               id="stepper-back-btn"
               onClick={onBack}
               aria-label="Go back to syllabus map"
-              className="p-2 rounded-lg text-[#64748B] hover:text-[#333333] hover:bg-[#F8F6EE] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
+              className="p-2 rounded-lg text-[#64748B] hover:text-[#333333] hover:bg-[#F8F6EE] active:scale-[0.95] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-all"
               title="Go Back"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -414,10 +370,10 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
               <AnimatePresence>
                 {showXpFloat && (
                   <motion.span
-                    initial={{ opacity: 0, y: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, y: -24, scale: 1.1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6 }}
+                    initial={{ opacity: 0, y: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, y: -24, scale: 1.03 }}
+                    exit={{ opacity: 0, y: -32, scale: 0.98 }}
+                    transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     className="absolute -top-1 right-0 font-bold text-xs text-[#EF3F52] bg-white px-2 py-0.5 rounded-full shadow-md border border-[#E5E7EB] pointer-events-none"
                   >
                     +20 XP!
@@ -432,7 +388,7 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
               id="sound-toggle-btn"
               onClick={() => setSoundEnabled((prev) => !prev)}
               aria-label={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
-              className="p-1.5 rounded-full text-[#64748B] hover:text-[#333333] hover:bg-[#F8F6EE] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-colors"
+              className="p-1.5 rounded-full text-[#64748B] hover:text-[#333333] hover:bg-[#F8F6EE] active:scale-[0.95] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757] transition-all"
               title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
             >
               {soundEnabled ? (
@@ -573,14 +529,20 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
                   Insert:
                 </span>
                 {currentStep.keypad_shortcuts.map((chip, i) => (
-                  <button
+                  <motion.button
                     key={i}
                     type="button"
-                    onClick={() => handleInsertShortcut(chip)}
-                    className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#F8F6EE] hover:bg-[#FFE757] text-[#333333] border border-[#E5E7EB] active:scale-95 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.93 }}
+                    transition={{ type: 'spring', stiffness: 450, damping: 18 }}
+                    onClick={() => {
+                      if (soundEnabled) playSound('click');
+                      handleInsertShortcut(chip);
+                    }}
+                    className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#F8F6EE] hover:bg-[#FFE757] text-[#333333] border border-[#E5E7EB] transition-colors"
                   >
                     {chip}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             )}
@@ -588,10 +550,14 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
 
           {/* 5. NEED A HINT? Expandable Accordion */}
           <div className="mt-4 pt-3 border-t border-[#E5E7EB]">
-            <button
+            <motion.button
               type="button"
               id="toggle-hint-btn"
-              onClick={() => setIsHintOpen((prev) => !prev)}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (soundEnabled) playSound('click');
+                setIsHintOpen((prev) => !prev);
+              }}
               className="flex items-center gap-1.5 text-xs font-bold text-[#333333] hover:text-[#EF3F52] transition-colors"
             >
               <Lightbulb className="w-3.5 h-3.5 text-[#EF3F52]" />
@@ -601,14 +567,15 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
                   isHintOpen ? 'rotate-180' : ''
                 }`}
               />
-            </button>
+            </motion.button>
 
             <AnimatePresence>
               {isHintOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
+                  initial={{ opacity: 0, height: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                  exit={{ opacity: 0, height: 0, scale: 0.98 }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   className="mt-2 text-xs sm:text-sm text-[#333333] bg-[#F8F6EE] border border-[#E5E7EB] rounded-md p-3 leading-relaxed overflow-hidden"
                 >
                   <span className="font-bold block mb-1">💡 Coach Tip:</span>
@@ -696,28 +663,34 @@ export const MathProblemStepper: React.FC<MathProblemStepperProps> = ({
           {/* Primary Action Button */}
           <div className="w-full sm:w-auto flex items-center gap-2 justify-end">
             {status === 'success' ? (
-              <button
+              <motion.button
                 type="button"
                 id="continue-step-btn"
                 onClick={handleContinue}
-                className="w-full sm:w-auto h-[41px] px-[35px] rounded-[20px] bg-[#FFE757] text-[#EF3F52] hover:bg-[#EF3F52] hover:text-white font-bold text-sm transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757]"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className="w-full sm:w-auto h-[41px] px-[35px] rounded-[20px] bg-[#FFE757] text-[#EF3F52] hover:bg-[#EF3F52] hover:text-white font-bold text-sm transition-colors shadow-xs flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFE757]"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 type="button"
                 id="check-answer-btn"
                 onClick={handleCheckAnswer}
-                className={`w-full sm:w-auto h-[41px] px-[35px] rounded-[20px] font-bold text-sm transition-all shadow-xs active:scale-[0.98] flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className={`w-full sm:w-auto h-[41px] px-[35px] rounded-[20px] font-bold text-sm transition-colors shadow-xs flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 ${
                   status === 'error'
                     ? 'bg-[#EF3F52] hover:bg-[#D92D20] text-white focus-visible:ring-[#EF3F52]'
                     : 'bg-[#FFE757] text-[#EF3F52] hover:bg-[#EF3F52] hover:text-white focus-visible:ring-[#FFE757]'
                 }`}
               >
                 <span>{status === 'error' ? 'Try Again' : 'Check Answer'}</span>
-              </button>
+              </motion.button>
             )}
           </div>
         </div>
